@@ -110,7 +110,7 @@ namespace AppTracker {
             Func<ProcessEntry, object> sortItemAccessor = null;
             if ("Process".Equals(headerName))
                 sortItemAccessor = (entry => entry.Name);
-            else if ("Time (Hours)".Equals(headerName))
+            else if ("Time (ms)".Equals(headerName))
                 sortItemAccessor = (entry => entry.Time);
 
             if (headerName.Equals(_currentSortedColumnName) && _sortedColumnIsAscending) {

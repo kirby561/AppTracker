@@ -18,7 +18,7 @@
                     </GridViewColumn>
                     <GridViewColumn Width="50" DisplayMemberBinding="{Binding Time}">
                         <GridViewColumn.Header>
-                            <GridViewColumnHeader>Time (Hours)</GridViewColumnHeader>
+                            <GridViewColumnHeader>Time (ms)</GridViewColumnHeader>
                         </GridViewColumn.Header>
                     </GridViewColumn>
                 </GridView>
