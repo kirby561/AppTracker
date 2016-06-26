@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -21,7 +23,8 @@ namespace AppTracker {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        private Timer _checkProcessesTimer;
+        private System.Timers.Timer _checkProcessesTimer;
+        private Mutex _timeTrackerLock = new Mutex();
         private TimeTracker _timeTracker = new TimeTracker();
         private double _timePeriod = 5000;
         private List<ProcessEntry> _displayedList = new List<ProcessEntry>();
@@ -41,7 +44,7 @@ namespace AppTracker {
             _executableDirectory = Directory.GetParent(_executablePath).FullName;
 
             // Create timer
-            _checkProcessesTimer = new Timer();
+            _checkProcessesTimer = new System.Timers.Timer();
             _checkProcessesTimer.AutoReset = true;
             _checkProcessesTimer.Interval = _timePeriod;
             _checkProcessesTimer.Elapsed += OnCheckProcessesTimerElapsed;
@@ -166,6 +169,7 @@ namespace AppTracker {
             Process[] processes = Process.GetProcesses();
             bool needsSort = false;
 
+            _timeTrackerLock.WaitOne();
             foreach (Process process in processes) {
                 bool wasNew = _timeTracker.AddTime(process.ProcessName, _timePeriod);
 
@@ -178,6 +182,8 @@ namespace AppTracker {
             // Persist the tracker to disk.  This could be more efficient
             //    but this will work for now.
             String csvString = _timeTracker.ToCsv();
+            _timeTrackerLock.ReleaseMutex();
+            
             String dataFile = GetDataFile();
             AtomicFileManager.WriteAtomicFile(dataFile, csvString);
 
@@ -202,6 +208,24 @@ namespace AppTracker {
 
         private void OnProcessListViewSizeChanged(object sender, SizeChangedEventArgs e) {
             SizeLastColumn();
+        }
+
+        private void OnExitClicked(object sender, RoutedEventArgs e) {
+            Application.Current.Shutdown();
+        }
+
+        private void OnExportClicked(object sender, RoutedEventArgs e) {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.DefaultExt = ".csv";
+            saveFileDialog.AddExtension = true;
+            saveFileDialog.Filter = "Comma-Separated-Value files|*.csv";
+            if (saveFileDialog.ShowDialog() == true) {
+                _timeTrackerLock.WaitOne();
+                String csvText = _timeTracker.ToCsv();
+                _timeTrackerLock.ReleaseMutex();
+
+                File.WriteAllText(saveFileDialog.FileName, csvText);
+            }
         }
     }
 }
