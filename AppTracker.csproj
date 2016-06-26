@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AtomicFileManager.cs" />
     <Compile Include="TimeEntry.cs" />
     <Compile Include="TimeTracker.cs" />
     <Page Include="MainWindow.xaml">
