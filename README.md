@@ -11,5 +11,5 @@ App Tracker is built using VS2015.  Just open the solution file and press build.
 ## Platforms
 App Tracker is Windows only.
 
-# License
+## License
 MIT.  See LICENSE
