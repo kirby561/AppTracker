@@ -6,13 +6,21 @@
         xmlns:local="clr-namespace:AppTracker"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
-        Title="MainWindow" Height="350" Width="525">
+        Title="App Tracker" Height="350" Width="525">
     <Grid>
-        <ListView SizeChanged="OnProcessListViewSizeChanged" Margin="10" Name="_processListView">
+        <ListView SizeChanged="OnProcessListViewSizeChanged" Name="_processListView">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Process" Width="120" DisplayMemberBinding="{Binding Name}" />
-                    <GridViewColumn Header="Time (Hours)" Width="50" DisplayMemberBinding="{Binding Time}" />
+                    <GridViewColumn Width="120" DisplayMemberBinding="{Binding Name}">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader>Process</GridViewColumnHeader>
+                        </GridViewColumn.Header>
+                    </GridViewColumn>
+                    <GridViewColumn Width="50" DisplayMemberBinding="{Binding Time}">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader>Time (Hours)</GridViewColumnHeader>
+                        </GridViewColumn.Header>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
