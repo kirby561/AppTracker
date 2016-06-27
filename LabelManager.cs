@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AppTracker {
-    class LabelManager {
+    public class LabelManager {
         private Dictionary<String, HashSet<String>> _labelMap = new Dictionary<String, HashSet<String>>();
         private ObservableCollection<String> _possibleLabels = new ObservableCollection<String>();
 
@@ -42,6 +42,15 @@ namespace AppTracker {
             if (!_labelMap.ContainsKey(processName))
                 return false;
             return _labelMap[processName].Contains(label);
+        }
+
+        /// <summary>
+        /// Indicates if the label exists or not.
+        /// </summary>
+        /// <param name="label">The label to check</param>
+        /// <returns>True if the label already exists.  False otherwise.</returns>
+        public bool LabelExists(String label) {
+            return _possibleLabels.Contains(label);
         }
 
         /// <summary>

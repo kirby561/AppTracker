@@ -264,11 +264,11 @@ namespace AppTracker {
             SizeLastColumn();
         }
 
-        private void OnExitClicked(object sender, RoutedEventArgs e) {
+        private void OnMenuExitClicked(object sender, RoutedEventArgs e) {
             Application.Current.Shutdown();
         }
 
-        private void OnExportClicked(object sender, RoutedEventArgs e) {
+        private void OnMenuExportClicked(object sender, RoutedEventArgs e) {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.DefaultExt = ".csv";
             saveFileDialog.AddExtension = true;
@@ -280,6 +280,11 @@ namespace AppTracker {
 
                 File.WriteAllText(saveFileDialog.FileName, csvText);
             }
+        }
+
+        private void OnMenuLabelsClicked(object sender, RoutedEventArgs e) {
+            LabelEditorWindow labelEditor = new LabelEditorWindow(_labelManager);
+            labelEditor.ShowDialog();
         }
     }
 }

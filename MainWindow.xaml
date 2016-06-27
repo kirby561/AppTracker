@@ -14,8 +14,11 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" Name="_menu" Height="Auto">
             <MenuItem Header="_File">
-                <MenuItem Name="_mnuExport" Click="OnExportClicked" Header="E_xport" />
-                <MenuItem Name="_mnuExit" Click="OnExitClicked" Header="_Exit" />
+                <MenuItem Click="OnMenuExportClicked" Header="E_xport" />
+                <MenuItem Click="OnMenuExitClicked" Header="_Exit" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Click="OnMenuLabelsClicked" Header="_Labels" />
             </MenuItem>
         </Menu>
         <ListView Grid.Row="1" SizeChanged="OnProcessListViewSizeChanged" Name="_processListView">
