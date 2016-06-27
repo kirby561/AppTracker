@@ -19,6 +19,18 @@
             </MenuItem>
         </Menu>
         <ListView Grid.Row="1" SizeChanged="OnProcessListViewSizeChanged" Name="_processListView">
+            <ListView.Resources>
+                <ContextMenu x:Key="ItemContextMenu">
+                    <MenuItem Header="Label" Command="{Binding Path=DataContext.MoreInfo, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" Background="WhiteSmoke">
+                    </MenuItem>
+                </ContextMenu>
+            </ListView.Resources>
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}" >
+                    <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="120" DisplayMemberBinding="{Binding Name}">

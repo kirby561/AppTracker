@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -26,6 +28,7 @@ namespace AppTracker {
         private System.Timers.Timer _checkProcessesTimer;
         private Mutex _timeTrackerLock = new Mutex();
         private TimeTracker _timeTracker = new TimeTracker();
+        private LabelManager _labelManager = new LabelManager();
         private double _timePeriod = 5000;
         private List<ProcessEntry> _displayedList = new List<ProcessEntry>();
         private String _executablePath;
@@ -52,12 +55,17 @@ namespace AppTracker {
 
             // Set the list item source
             _processListView.ItemsSource = _displayedList;
+            _processListView.SelectionChanged += OnSelectionChanged;
 
             // Load our existing processes from disk
             InitializeTimeTracker();
 
             // Hook up column header events for sorting
             InitializeColumnEvents();
+
+            // Add some dummy labels
+            _labelManager.AddLabel("Game");
+            _labelManager.AddLabel("System");
         }
 
         /// <summary>
@@ -163,6 +171,52 @@ namespace AppTracker {
         /// <returns>The path to the data file.</returns>
         private String GetDataFile() {
             return GetDataDirectory() + "/ProcessData.csv";
+        }
+
+        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (_processListView.SelectedItem != null) {
+                ListViewItem lvi = (ListViewItem)_processListView.ItemContainerGenerator.ContainerFromItem(_processListView.SelectedItem);
+
+                // Set the context menu items for this entry
+                if (lvi != null) {
+                    MenuItem labelsItem = lvi.ContextMenu.Items.GetItemAt(0) as MenuItem;
+                    
+                    if (labelsItem != null) {
+                        if (labelsItem.ItemsSource == null) {
+                            labelsItem.Click += OnLabelClicked;
+                            labelsItem.ItemsSource = _labelManager.GetLabels();
+                            labelsItem.ItemContainerGenerator.StatusChanged +=
+                                (object statusSender, EventArgs eventArgs) => {
+                                // Wait for containers to be generated
+                                if (labelsItem.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
+                                        return;
+
+                                    String selectedProcessName = ((ProcessEntry)_processListView.SelectedItem).Name;
+
+                                // Setup the context menu based on what labels already apply
+                                //    to the selected item.
+                                foreach (String label in labelsItem.Items) {
+                                        MenuItem labelContainer = labelsItem.ItemContainerGenerator.ContainerFromItem(label) as MenuItem;
+                                        labelContainer.IsChecked = _labelManager.HasLabel(selectedProcessName, label);
+                                    }
+                                };
+                        } else {
+                            // Refresh so the menu regenerates what's labeled
+                            labelsItem.Items.Refresh();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnLabelClicked(object sender, RoutedEventArgs e) {
+            MenuItem item = e.OriginalSource as MenuItem;
+            if (item != sender) {
+                ProcessEntry selectedItem = _processListView.SelectedItem as ProcessEntry;
+                Console.WriteLine(selectedItem.Name);
+                _labelManager.Label(selectedItem.Name, item.Header as String);
+                item.IsChecked = true;
+            }
         }
 
         private void OnCheckProcessesTimerElapsed(object sender, ElapsedEventArgs e) {
