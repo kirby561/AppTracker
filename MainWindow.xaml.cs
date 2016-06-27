@@ -187,15 +187,15 @@ namespace AppTracker {
                             labelsItem.ItemsSource = _labelManager.GetLabels();
                             labelsItem.ItemContainerGenerator.StatusChanged +=
                                 (object statusSender, EventArgs eventArgs) => {
-                                // Wait for containers to be generated
-                                if (labelsItem.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
-                                        return;
+                                    // Wait for containers to be generated
+                                    if (labelsItem.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
+                                            return;
 
                                     String selectedProcessName = ((ProcessEntry)_processListView.SelectedItem).Name;
 
-                                // Setup the context menu based on what labels already apply
-                                //    to the selected item.
-                                foreach (String label in labelsItem.Items) {
+                                    // Setup the context menu based on what labels already apply
+                                    //    to the selected item.
+                                    foreach (String label in labelsItem.Items) {
                                         MenuItem labelContainer = labelsItem.ItemContainerGenerator.ContainerFromItem(label) as MenuItem;
                                         labelContainer.IsChecked = _labelManager.HasLabel(selectedProcessName, label);
                                     }
