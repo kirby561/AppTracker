@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace AppTracker {
     public class LabelManager {
@@ -76,6 +78,99 @@ namespace AppTracker {
         /// <param name="label">The label to remove</param>
         public void RemoveLabel(String label) {
             _possibleLabels.Remove(label);
+        }
+
+        /// <summary>
+        /// Serializes this class to an XML string.
+        /// </summary>
+        /// <returns>The XML string generated</returns>
+        public String ToXml() {
+            StringBuilder output = new StringBuilder();
+            XmlWriter writer = XmlWriter.Create(output);
+
+            writer.WriteStartDocument();
+
+            // Write a root element
+            writer.WriteStartElement("LabelManager");
+            {
+                // Write the label list first
+                writer.WriteStartElement("Labels");
+                {
+                    foreach (String label in _possibleLabels) {
+                        writer.WriteStartElement("Label");
+                        writer.WriteValue(label);
+                        writer.WriteEndElement();
+                    }
+                }
+                writer.WriteEndElement();
+
+                // Now write the dictionary
+                writer.WriteStartElement("Dictionary");
+                {
+                    foreach (String key in _labelMap.Keys) {
+                        writer.WriteStartElement("Entry");
+                        {
+                            writer.WriteAttributeString("Key", key);
+
+                            foreach (String label in _labelMap[key]) {
+                                writer.WriteStartElement("Label");
+                                writer.WriteAttributeString("Name", label);
+                                writer.WriteEndElement();
+                            }
+                        }
+                        writer.WriteEndElement();
+                    }
+                }
+                writer.WriteEndElement();
+            }
+            writer.WriteEndElement();
+            writer.Close();
+
+            return output.ToString();
+        }
+
+        public void LoadXml(String xml) {
+            // ?? TODO
+            StringReader stringReader = new StringReader(xml);
+            XmlReader reader = XmlReader.Create(stringReader);
+
+            // Start with the root
+            reader.ReadStartElement("LabelManager");
+            {
+                Console.WriteLine(reader.Name);
+
+                // First read the possible labels
+                _possibleLabels.Clear();
+                reader.ReadStartElement("Labels");
+                {
+                    while (reader.Name == "Label") {
+                        String content = reader.ReadElementContentAsString();
+                        Console.WriteLine(content);
+                        _possibleLabels.Add(content);
+                    }
+                }
+                reader.ReadEndElement();
+
+                // Now read the dictionary
+                reader.ReadStartElement("Dictionary");
+
+                if (reader.Name == "Entry") {
+                    while (reader.Name == "Entry") {
+                        String key = reader.GetAttribute("Key");
+                        reader.Read();
+
+                        while (reader.Name == "Label") {
+                            String label = reader.GetAttribute("Name");
+                            Label(key, label);
+                            reader.Read();
+                        }
+                    }
+                    reader.ReadEndElement();
+                }
+            }
+            reader.ReadEndElement();
+
+            reader.Close();
         }
     }
 }

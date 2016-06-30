@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AppTracker"
         mc:Ignorable="d"
+        Icon="Resources/AppTrackerIcon.ico"
         Loaded="OnWindowLoaded"
+        Closing="OnWindowClosing"
         Title="App Tracker" Height="350" Width="525">
     <Grid>
         <Grid.RowDefinitions>

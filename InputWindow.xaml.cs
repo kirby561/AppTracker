@@ -17,6 +17,13 @@ namespace AppTracker {
     /// Interaction logic for InputWindow.xaml
     /// </summary>
     public partial class InputWindow : Window {
+        /// <summary>
+        /// This is the result of the input window.
+        /// It will be null if the user didn't enter anything or canceled.
+        /// Otherwise it will be set to what they entered.
+        /// </summary>
+        public String Input { get; private set; }
+
         public InputWindow(String prompt) {
             InitializeComponent();
 
@@ -48,8 +55,6 @@ namespace AppTracker {
             Input = null;
             Close();
         }
-
-        public String Input { get; private set; }
 
         private void OnInputBoxKeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {

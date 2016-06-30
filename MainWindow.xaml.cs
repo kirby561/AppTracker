@@ -63,9 +63,9 @@ namespace AppTracker {
             // Hook up column header events for sorting
             InitializeColumnEvents();
 
-            // Add some dummy labels
-            _labelManager.AddLabel("Game");
-            _labelManager.AddLabel("System");
+            // Load our labels
+            String labelXml = File.ReadAllText(GetLabelMapFile());
+            _labelManager.LoadXml(labelXml);
         }
 
         /// <summary>
@@ -173,6 +173,10 @@ namespace AppTracker {
             return GetDataDirectory() + "/ProcessData.csv";
         }
 
+        private String GetLabelMapFile() {
+            return GetDataDirectory() + "/LabelMaps.xml";
+        }
+
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (_processListView.SelectedItem != null) {
                 ListViewItem lvi = (ListViewItem)_processListView.ItemContainerGenerator.ContainerFromItem(_processListView.SelectedItem);
@@ -220,6 +224,12 @@ namespace AppTracker {
         }
 
         private void OnCheckProcessesTimerElapsed(object sender, ElapsedEventArgs e) {
+            // Take the opportunity to save our label state
+            App.Current.Dispatcher.Invoke(() => {
+                String xml = _labelManager.ToXml();
+                File.WriteAllText(GetLabelMapFile(), xml);
+            });
+
             Process[] processes = Process.GetProcesses();
             bool needsSort = false;
 
@@ -285,6 +295,11 @@ namespace AppTracker {
         private void OnMenuLabelsClicked(object sender, RoutedEventArgs e) {
             LabelEditorWindow labelEditor = new LabelEditorWindow(_labelManager);
             labelEditor.ShowDialog();
+        }
+
+        private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e) {
+            String xml = _labelManager.ToXml();
+            File.WriteAllText(GetLabelMapFile(), xml);
         }
     }
 }
