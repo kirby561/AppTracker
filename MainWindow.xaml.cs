@@ -64,8 +64,7 @@ namespace AppTracker {
             InitializeColumnEvents();
 
             // Load our labels
-            String labelXml = File.ReadAllText(GetLabelMapFile());
-            _labelManager.LoadXml(labelXml);
+            LoadLabelMap();
         }
 
         /// <summary>
@@ -82,6 +81,20 @@ namespace AppTracker {
 
             // Sort it
             SortByColumnHeader(_currentSortedColumnName, _sortedColumnIsAscending);
+        }
+
+        /// <summary>
+        /// Loads the list of labels and their mappings.
+        /// </summary>
+        private void LoadLabelMap() {
+            String labelXml = null;
+            String labelFile = GetLabelMapFile();
+
+            if (File.Exists(labelFile))
+                labelXml = File.ReadAllText(labelFile);
+
+            if (labelXml != null)
+                _labelManager.LoadXml(labelXml);
         }
 
         /// <summary>
