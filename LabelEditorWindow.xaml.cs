@@ -36,6 +36,10 @@ namespace AppTracker {
                 if (!_labelManager.LabelExists(result)) {
                     // Add it
                     _labelManager.AddLabel(result);
+
+                    // Update the display
+                    _labelListView.ItemsSource = _labelManager.GetLabels();
+                    _labelListView.Items.Refresh();
                 } else {
                     // No reason to add it twice
                     MessageBox.Show("That label already exists.");
@@ -52,6 +56,10 @@ namespace AppTracker {
             foreach (String item in labelsToRemove) {
                 _labelManager.RemoveLabel(item);
             }
+
+            // Update the display
+            _labelListView.ItemsSource = _labelManager.GetLabels();
+            _labelListView.Items.Refresh();
         }
 
         private void OnDoneClicked(object sender, RoutedEventArgs e) {

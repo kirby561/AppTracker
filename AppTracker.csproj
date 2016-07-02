@@ -63,6 +63,9 @@
     <Compile Include="InputWindow.xaml.cs">
       <DependentUpon>InputWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FilterEditorWindow.xaml.cs">
+      <DependentUpon>FilterEditorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LabelEditorWindow.xaml.cs">
       <DependentUpon>LabelEditorWindow.xaml</DependentUpon>
     </Compile>
@@ -72,6 +75,10 @@
     <Page Include="InputWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FilterEditorWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="LabelEditorWindow.xaml">
       <SubType>Designer</SubType>

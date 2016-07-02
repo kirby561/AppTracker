@@ -30,6 +30,7 @@ namespace AppTracker {
         private TimeTracker _timeTracker = new TimeTracker();
         private LabelManager _labelManager = new LabelManager();
         private double _timePeriod = 5000;
+        private List<ProcessEntry> _processList = new List<ProcessEntry>();
         private List<ProcessEntry> _displayedList = new List<ProcessEntry>();
         private String _executablePath;
         private String _executableDirectory;
@@ -54,7 +55,7 @@ namespace AppTracker {
             _checkProcessesTimer.Start();
 
             // Set the list item source
-            _processListView.ItemsSource = _displayedList;
+            _processListView.ItemsSource = _processList;
             _processListView.SelectionChanged += OnSelectionChanged;
 
             // Load our existing processes from disk
@@ -65,6 +66,9 @@ namespace AppTracker {
 
             // Load our labels
             LoadLabelMap();
+
+            // Aoply filters, which also sets the list of items to display.
+            ApplyFilters();
         }
 
         /// <summary>
@@ -76,7 +80,7 @@ namespace AppTracker {
 
             // Load it into the displayed list and sort
             foreach (ProcessEntry entry in _timeTracker.GetDictionary().Values) {
-                _displayedList.Add(entry);
+                _processList.Add(entry);
             }
 
             // Sort it
@@ -141,6 +145,19 @@ namespace AppTracker {
         }
 
         /// <summary>
+        /// Applies filters to the list
+        /// </summary>
+        private void ApplyFilters() {
+            _displayedList.Clear();
+            foreach (ProcessEntry process in _processList) {
+                if (!_labelManager.IsFiltered(process.Name))
+                    _displayedList.Add(process);
+            }
+            _processListView.ItemsSource = _displayedList;
+            _processListView.Items.Refresh();
+        }
+
+        /// <summary>
         /// Sorts the list by the given column.
         /// </summary>
         /// <param name="headerName">The header name of the column to sort on.</param>
@@ -153,13 +170,12 @@ namespace AppTracker {
                 sortItemAccessor = (entry => entry.Time);
 
             if (headerName.Equals(_currentSortedColumnName) && !isAscending) {
-                _displayedList = _displayedList.OrderByDescending(sortItemAccessor).ToList();
+                _processList = _processList.OrderByDescending(sortItemAccessor).ToList();
                 _sortedColumnIsAscending = false;
             } else {
-                _displayedList = _displayedList.OrderBy(sortItemAccessor).ToList();
+                _processList = _processList.OrderBy(sortItemAccessor).ToList();
                 _sortedColumnIsAscending = true;
             }
-            _processListView.ItemsSource = _displayedList;
             _currentSortedColumnName = headerName;
         }
 
@@ -201,26 +217,25 @@ namespace AppTracker {
                     if (labelsItem != null) {
                         if (labelsItem.ItemsSource == null) {
                             labelsItem.Click += OnLabelClicked;
-                            labelsItem.ItemsSource = _labelManager.GetLabels();
                             labelsItem.ItemContainerGenerator.StatusChanged +=
                                 (object statusSender, EventArgs eventArgs) => {
                                     // Wait for containers to be generated
                                     if (labelsItem.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
-                                            return;
+                                        return;
 
                                     String selectedProcessName = ((ProcessEntry)_processListView.SelectedItem).Name;
 
                                     // Setup the context menu based on what labels already apply
                                     //    to the selected item.
-                                    foreach (String label in labelsItem.Items) {
+                                    foreach (Label label in labelsItem.Items) {
                                         MenuItem labelContainer = labelsItem.ItemContainerGenerator.ContainerFromItem(label) as MenuItem;
-                                        labelContainer.IsChecked = _labelManager.HasLabel(selectedProcessName, label);
+                                        labelContainer.IsChecked = _labelManager.HasLabel(selectedProcessName, label.Name);
                                     }
                                 };
-                        } else {
-                            // Refresh so the menu regenerates what's labeled
-                            labelsItem.Items.Refresh();
                         }
+
+                        labelsItem.ItemsSource = _labelManager.GetLabels();
+                        labelsItem.Items.Refresh();
                     }
                 }
             }
@@ -231,7 +246,8 @@ namespace AppTracker {
             if (item != sender) {
                 ProcessEntry selectedItem = _processListView.SelectedItem as ProcessEntry;
                 Console.WriteLine(selectedItem.Name);
-                _labelManager.Label(selectedItem.Name, item.Header as String);
+                Label label = item.Header as Label;
+                _labelManager.Label(selectedItem.Name, label.Name);
                 item.IsChecked = true;
             }
         }
@@ -251,7 +267,7 @@ namespace AppTracker {
                 bool wasNew = _timeTracker.AddTime(process.ProcessName, _timePeriod);
 
                 if (wasNew) {
-                    _displayedList.Add(_timeTracker.GetEntry(process.ProcessName));
+                    _processList.Add(_timeTracker.GetEntry(process.ProcessName));
                     needsSort = true;
                 }
             }
@@ -268,7 +284,7 @@ namespace AppTracker {
                 if (needsSort)
                     SortByColumnHeader(_currentSortedColumnName, _sortedColumnIsAscending);
 
-                _processListView.Items.Refresh();
+                ApplyFilters();
             });
         }
 
@@ -281,6 +297,7 @@ namespace AppTracker {
             String headerName = header.Content as String;
 
             SortByColumnHeader(headerName, (!headerName.Equals(_currentSortedColumnName) || !_sortedColumnIsAscending));
+            ApplyFilters();
         }
 
         private void OnProcessListViewSizeChanged(object sender, SizeChangedEventArgs e) {
@@ -308,6 +325,10 @@ namespace AppTracker {
         private void OnMenuLabelsClicked(object sender, RoutedEventArgs e) {
             LabelEditorWindow labelEditor = new LabelEditorWindow(_labelManager);
             labelEditor.ShowDialog();
+        }
+
+        private void OnMenuFilterClicked(object sender, RoutedEventArgs e) {
+            
         }
 
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e) {
