@@ -328,7 +328,8 @@ namespace AppTracker {
         }
 
         private void OnMenuFilterClicked(object sender, RoutedEventArgs e) {
-            
+            FilterEditorWindow filterEditor = new FilterEditorWindow(_labelManager);
+            filterEditor.ShowDialog();
         }
 
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e) {

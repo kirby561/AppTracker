@@ -125,7 +125,7 @@ namespace AppTracker {
         }
 
         /// <summary>
-        /// Flags the given label as filtered.
+        /// Flags the given label as filtered (Note filtered means the item is NOT displayed).
         /// </summary>
         /// <param name="labelName">The label to filter</param>
         /// <returns>True if the label was successfully filtered.  False otherwise.</returns>

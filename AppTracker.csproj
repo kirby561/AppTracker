@@ -60,11 +60,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AtomicFileManager.cs" />
-    <Compile Include="InputWindow.xaml.cs">
-      <DependentUpon>InputWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="FilterEditorWindow.xaml.cs">
       <DependentUpon>FilterEditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="InputWindow.xaml.cs">
+      <DependentUpon>InputWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="LabelEditorWindow.xaml.cs">
       <DependentUpon>LabelEditorWindow.xaml</DependentUpon>
@@ -72,13 +72,13 @@
     <Compile Include="LabelManager.cs" />
     <Compile Include="TimeEntry.cs" />
     <Compile Include="TimeTracker.cs" />
-    <Page Include="InputWindow.xaml">
+    <Page Include="FilterEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FilterEditorWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="InputWindow.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LabelEditorWindow.xaml">
       <SubType>Designer</SubType>
