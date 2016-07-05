@@ -21,7 +21,7 @@
             </MenuItem>
             <MenuItem Header="_Edit">
                 <MenuItem Click="OnMenuLabelsClicked" Header="_Labels" />
-                <MenuItem Click="OnMenuFilterClicked" Header="_Filter" />
+                <MenuItem Click="OnMenuFiltersClicked" Header="_Filters" />
             </MenuItem>
         </Menu>
         <ListView Grid.Row="1" SizeChanged="OnProcessListViewSizeChanged" Name="_processListView">

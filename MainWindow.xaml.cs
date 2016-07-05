@@ -327,7 +327,7 @@ namespace AppTracker {
             labelEditor.ShowDialog();
         }
 
-        private void OnMenuFilterClicked(object sender, RoutedEventArgs e) {
+        private void OnMenuFiltersClicked(object sender, RoutedEventArgs e) {
             FilterEditorWindow filterEditor = new FilterEditorWindow(_labelManager);
             filterEditor.ShowDialog();
         }
