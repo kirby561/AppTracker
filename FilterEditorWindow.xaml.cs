@@ -30,12 +30,28 @@ namespace AppTracker {
             _labelListView.ItemContainerGenerator.StatusChanged += OnItemGeneratorStatusChanged;
         }
 
-        void OnItemGeneratorStatusChanged(object sender, EventArgs e) {
+        /// <summary>
+        /// Saves the filters that are selected.
+        /// </summary>
+        private void SaveFilters() {
+            // Filter everything for the moment
+            foreach (Label label in _labels) {
+                _labelManager.FilterLabel(label.Name);
+            }
+
+            // Unfilter whatever is selected in the list
+            foreach (Label label in _labelListView.SelectedItems) {
+                if (label != null) {
+                    _labelManager.UnfilterLabel(label.Name);
+                } else {
+                    Console.WriteLine("Item is not a label");
+                }
+            }
+        }
+
+        private void OnItemGeneratorStatusChanged(object sender, EventArgs e) {
             if (_labelListView.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated) {
                 UpdateLabelList();
-
-                // Start listening to selection events after we've initialized it
-                _labelListView.SelectionChanged += OnLabelSelectionChanged;
             }
         }
 
@@ -56,23 +72,14 @@ namespace AppTracker {
             }
         }
 
-        private void OnLabelSelectionChanged(object sender, SelectionChangedEventArgs e) {
-            // Unfilter everything for the moment
-            foreach (Label label in _labels) {
-                _labelManager.FilterLabel(label.Name);
-            }
+        private void OnSaveClicked(object sender, RoutedEventArgs e) {
+            // Save the filters they selected
+            SaveFilters();
 
-            // Mark the selection as filtered
-            foreach (Label label in _labelListView.SelectedItems) {
-                if (label != null) {
-                    _labelManager.UnfilterLabel(label.Name);
-                } else {
-                    Console.WriteLine("Item is not a label");
-                }
-            }
+            Close();
         }
 
-        private void OnDoneClicked(object sender, RoutedEventArgs e) {
+        private void OnCancelClicked(object sender, RoutedEventArgs e) {
             Close();
         }
 

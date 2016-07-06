@@ -13,7 +13,8 @@
         <StackPanel Grid.Row="1" HorizontalAlignment="Left" Orientation="Horizontal"/>
 
         <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button Margin="5" Padding="5,2,5,2" Content="Done" Click="OnDoneClicked" />
+            <Button Margin="5" Padding="5,2,5,2" Content="Save" Click="OnSaveClicked" />
+            <Button Margin="5" Padding="5,2,5,2" Content="Cancel" Click="OnCancelClicked" />
         </StackPanel>
     </Grid>
 </Window>

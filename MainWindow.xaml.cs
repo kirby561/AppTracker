@@ -244,11 +244,18 @@ namespace AppTracker {
         private void OnLabelClicked(object sender, RoutedEventArgs e) {
             MenuItem item = e.OriginalSource as MenuItem;
             if (item != sender) {
-                ProcessEntry selectedItem = _processListView.SelectedItem as ProcessEntry;
-                Console.WriteLine(selectedItem.Name);
+                item.IsChecked = !item.IsChecked;
                 Label label = item.Header as Label;
-                _labelManager.Label(selectedItem.Name, label.Name);
-                item.IsChecked = true;
+
+                // Label everything that is selected
+                foreach (object selectedItem in _processListView.SelectedItems) {
+                    ProcessEntry process = selectedItem as ProcessEntry;
+
+                    if (item.IsChecked)
+                        _labelManager.Label(process.Name, label.Name);
+                    else
+                        _labelManager.Unlabel(process.Name, label.Name);
+                }
             }
         }
 
@@ -330,6 +337,9 @@ namespace AppTracker {
         private void OnMenuFiltersClicked(object sender, RoutedEventArgs e) {
             FilterEditorWindow filterEditor = new FilterEditorWindow(_labelManager);
             filterEditor.ShowDialog();
+
+            // Apply the filters
+            ApplyFilters();
         }
 
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e) {
